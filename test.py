@@ -29,13 +29,41 @@ def getRelevantVariables(data):
 			'robot_pose':d['robot_pose'],
 			'rssi':d['RSSI'],
 			'ts':d['ts'],
-			'antena_port':d['ANTENNA_PORT'],
+			'antenna_port':''.join(d['ANTENNA_PORT']),
 			'device_id':d['device_id']})
 
 	return relData
 
-def quatToDegrees():
-	# antenas L = left antenas R = right
+def getAntennas(data):
+
+	antList = {"reader-01/4":"L1",
+		"reader-01/3":"L2",
+		"reader-01/2":"L3",
+		"reader-01/1":"L4",
+		"reader-02/1":"R1",
+		"reader-02/2":"R2",
+		"reader-02/3":"R3",
+		"reader-02/4":"R4"}
+
+	for d in data:
+		d["antenna_id"] = antList[d["device_id"] + "/" + d["antenna_port"]]
+
+	return data
+
+def getTransRotAntennas(data):
+	#make a list[trans,rot] where trans and rot are lists too
+	"""
+	"antenna_link","antenna_L1",0.15,0.17,0.03,0.5,-0.5,-0.5,-0.5
+"antenna_link","antenna_L2",0.15,0.63,0.03,0.5,-0.5,-0.5,-0.5
+"antenna_link","antenna_L3",0.15,1.1,0.03,0.5,-0.5,-0.5,-0.5
+"antenna_link","antenna_L4",0.15,1.56,0.03,0.5,-0.5,-0.5,-0.5
+"antenna_link","antenna_R1",0.15,0.17,0.14,0.5,0.5,0.5,-0.5
+"antenna_link","antenna_R2",0.15,0.63,0.14,0.5,0.5,0.5,-0.5
+"antenna_link","antenna_R3",0.15,1.1,0.14,0.5,0.5,0.5,-0.5
+"antenna_link","antenna_R4",0.15,1.56,0.14,0.5,0.5,0.5,-0.5
+	"""
+
+
 
 
 print("Creating scene...")
@@ -51,7 +79,12 @@ print("Getting important variables...")
 relevantData = getRelevantVariables(jsonData)
 print("Done.")
 
+print("Getting antennas which made the caption...")
+relevantData = getAntennas(relevantData)
+print("Done")
 
+
+#print(type(relevantData[0]["robot_pose"]))
 
 
 
