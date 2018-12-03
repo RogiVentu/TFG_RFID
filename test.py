@@ -14,7 +14,7 @@ def createScene(size):
 
 def readJSON():
 	data = []
-	with open('dades/dataTest.json','r') as f:
+	with open('dades/dataTest_fakePos.json','r') as f:
 		for line in f:
 			data.append(json.loads(line))
 
@@ -52,22 +52,54 @@ def getAntennas(data):
 
 def getTransRotAntennas(data):
 	#make a list[trans,rot] where trans and rot are lists too
-	"""
-	"antenna_link","antenna_L1",0.15,0.17,0.03,0.5,-0.5,-0.5,-0.5
-"antenna_link","antenna_L2",0.15,0.63,0.03,0.5,-0.5,-0.5,-0.5
-"antenna_link","antenna_L3",0.15,1.1,0.03,0.5,-0.5,-0.5,-0.5
-"antenna_link","antenna_L4",0.15,1.56,0.03,0.5,-0.5,-0.5,-0.5
-"antenna_link","antenna_R1",0.15,0.17,0.14,0.5,0.5,0.5,-0.5
-"antenna_link","antenna_R2",0.15,0.63,0.14,0.5,0.5,0.5,-0.5
-"antenna_link","antenna_R3",0.15,1.1,0.14,0.5,0.5,0.5,-0.5
-"antenna_link","antenna_R4",0.15,1.56,0.14,0.5,0.5,0.5,-0.5
-	"""
+	for d in data:
+		if d["antenna_id"] == "L1":
+			d["ant_pose"] = [[0.15,0.17,0.03],[0.5,-0.5,-0.5,-0.5]]
+		elif d["antenna_id"] == "L2":
+			d["ant_pose"] = [[0.15,0.63,0.03],[0.5,-0.5,-0.5,-0.5]]
+		elif d["antenna_id"] == "L3":
+			d["ant_pose"] = [[0.15,1.1,0.03],[0.5,-0.5,-0.5,-0.5]]
+		elif d["antenna_id"] == "L4":
+			d["ant_pose"] = [[0.15,1.56,0.03],[0.5,-0.5,-0.5,-0.5]]
+		elif d["antenna_id"] == "R1":
+			d["ant_pose"] = [[0.15,0.17,0.14],[0.5,0.5,0.5,-0.5]]
+		elif d["antenna_id"] == "R2":
+			d["ant_pose"] = [[0.15,0.63,0.14],[0.5,0.5,0.5,-0.5]]
+		elif d["antenna_id"] == "R3":
+			d["ant_pose"] = [[0.15,1.1,0.14],[0.5,0.5,0.5,-0.5]]
+		elif d["antenna_id"] == "R4":
+			d["ant_pose"] = [[0.15,1.56,0.14],[0.5,0.5,0.5,-0.5]]
+
+	return data
 
 
+def getAreas(data,scene):
+
+	for d in data:
+		pos = d["robot_pose"][0]
+		rot = d["robot_pose"][1]
+		x = pos[0]
+		y = pos[1]
+		scene[x][y] = 1
+
+	return scene
+
+def printScene(scene, size):
+	#this method should be remove for a plot library
+	finalOut = ""
+	for i in range(0,size):
+		for j in range(0,size):
+			finalOut += str(scene[i][j]) + "|"
+		finalOut += "\n"
+		for l in range(0, size*2-1):
+			finalOut += "-"
+		finalOut += "\n"
+
+	return finalOut
 
 
 print("Creating scene...")
-size = 10
+size = 25
 scene = createScene(size)
 print("Scene " +str(size)+ "x" +str(size)+ " created")
 
@@ -82,6 +114,18 @@ print("Done.")
 print("Getting antennas which made the caption...")
 relevantData = getAntennas(relevantData)
 print("Done")
+
+print("Getting antennas position and directions...")
+relevantData = getTransRotAntennas(relevantData)
+print("Done")
+
+print(relevantData)
+
+print("Getting aproximated areas...")
+sceneArea = getAreas(relevantData,scene)
+print("Done")
+
+print(printScene(sceneArea,size))
 
 
 #print(type(relevantData[0]["robot_pose"]))
