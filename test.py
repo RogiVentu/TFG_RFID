@@ -2,6 +2,17 @@ import json
 import codecs
 from pprint import pprint
 
+from pyquaternion import Quaternion
+
+from plotly.offline import iplot, init_notebook_mode
+import plotly.graph_objs as go
+import plotly.io as pio
+import plotly
+
+import os
+import numpy as np
+import random
+
 def createScene(size):
 	scene = []
 	for i in xrange(size):
@@ -14,7 +25,7 @@ def createScene(size):
 
 def readJSON():
 	data = []
-	with open('dades/dataTest_fakePos.json','r') as f:
+	with open('dades/500samples.json','r') as f:
 		for line in f:
 			data.append(json.loads(line))
 
@@ -46,8 +57,10 @@ def getAntennas(data):
 		"reader-02/4":"R4"}
 
 	for d in data:
-		d["antenna_id"] = antList[d["device_id"] + "/" + d["antenna_port"]]
-
+		try:
+			d["antenna_id"] = antList[d["device_id"] + "/" + d["antenna_port"]]
+		except:
+			d["antenna_id"] = "L3"
 	return data
 
 def getTransRotAntennas(data):
@@ -70,22 +83,37 @@ def getTransRotAntennas(data):
 		elif d["antenna_id"] == "R4":
 			d["ant_pose"] = [[0.15,1.56,0.14],[0.5,0.5,0.5,-0.5]]
 
+
 	return data
 
 
 def getAreas(data,scene):
+	#Quaternion(w, x, y, z)
 
 	for d in data:
-		pos = d["robot_pose"][0]
-		rot = d["robot_pose"][1]
-		x = pos[0]
-		y = pos[1]
-		scene[x][y] = 1
+		#robot 
+		r_pos = d["robot_pose"][0]
+		r_rot = d["robot_pose"][1]
+		r_x = r_pos[0]
+		r_y = r_pos[1]
+		r_degrees = Quaternion(r_rot[3],r_rot[0],r_rot[1],r_rot[2]).degrees
+		#antenna
+		a_pos = d["ant_pose"][0]
+		a_rot = d["ant_pose"][1]
+		#a_degrees = Quaternion(a_rot[3],a_rot[0],a_rot[1],a_rot[2]).degrees
+		if "L" in d["antenna_id"]:
+			a_degrees = 90
+		elif "R" in d["antenna_id"]:
+			a_degrees = -90
+
+		scene[r_x][r_y] = 1
+		print r_degrees + a_degrees
+
 
 	return scene
 
 def printScene(scene, size):
-	#this method should be remove for a plot library
+	#this method should be removed for a plot library
 	finalOut = ""
 	for i in range(0,size):
 		for j in range(0,size):
@@ -97,6 +125,32 @@ def printScene(scene, size):
 
 	return finalOut
 
+def printPlotlyScene(size,data):
+
+	N = len(data)
+
+	x = []
+	y = []
+	colors = []
+	sz = []
+	
+	for d in data:
+		#de moment agafem la pos del robot
+		x.append(d["robot_pose"][0][0])
+		y.append(d["robot_pose"][0][1])
+		colors.append(random.randint(1,100))
+		sz.append(int(d["rssi"][0])*(-1))
+
+	fig = go.Figure()
+	fig.add_scatter(x=x,
+				y=y,
+                mode='markers',
+                marker={'size': sz,
+                        'color': colors,
+                        'opacity': 0.6,
+                        'colorscale': 'Viridis'
+                       });
+	plotly.offline.plot(fig,auto_open=True)
 
 print("Creating scene...")
 size = 25
@@ -119,14 +173,14 @@ print("Getting antennas position and directions...")
 relevantData = getTransRotAntennas(relevantData)
 print("Done")
 
-print(relevantData)
-
+#print(relevantData)
+"""
 print("Getting aproximated areas...")
 sceneArea = getAreas(relevantData,scene)
 print("Done")
-
-print(printScene(sceneArea,size))
-
+"""
+#print(printScene(sceneArea,size))
+printPlotlyScene(size,relevantData)
 
 #print(type(relevantData[0]["robot_pose"]))
 
