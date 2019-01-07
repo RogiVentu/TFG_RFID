@@ -8,10 +8,13 @@ from plotly.offline import iplot, init_notebook_mode
 import plotly.graph_objs as go
 import plotly.io as pio
 import plotly
+import plotly.plotly as py
 
 import os
 import numpy as np
 import random
+
+from tkinter import *
 
 def createScene(size):
 	scene = []
@@ -23,9 +26,9 @@ def createScene(size):
 			scene[i][j] = 0
 	return scene
 
-def readJSON():
+def readJSON(jsonf):
 	data = []
-	with open('dades/500samples.json','r') as f:
+	with open(jsonf,'r') as f:
 		for line in f:
 			data.append(json.loads(line))
 
@@ -125,20 +128,26 @@ def printScene(scene, size):
 
 	return finalOut
 
-def printPlotlyScene(size,data):
-
-	N = len(data)
+def printPlotlyScene2D(data):
 
 	x = []
 	y = []
 	colors = []
 	sz = []
-	
+		
 	for d in data:
 		#de moment agafem la pos del robot
-		x.append(d["robot_pose"][0][0])
-		y.append(d["robot_pose"][0][1])
-		colors.append(random.randint(1,100))
+		try:
+			if d["robot_pose"][0][0] in x:
+				if d["robot_pose"][0][1] in y:
+					continue
+			x.append(d["robot_pose"][0][0])
+			y.append(d["robot_pose"][0][1])
+
+		except:
+			continue
+
+		colors.append(random.randint(0,39))
 		sz.append(int(d["rssi"][0])*(-1))
 
 	fig = go.Figure()
@@ -147,10 +156,87 @@ def printPlotlyScene(size,data):
                 mode='markers',
                 marker={'size': sz,
                         'color': colors,
-                        'opacity': 0.6,
-                        'colorscale': 'Viridis'
+                        'opacity': 0.4,
+                        'colorscale': 'Viridis',
+                        'line' : dict(
+                        	color = 'rgb(0,0,0)',
+                        	width = 0)                        
                        });
 	plotly.offline.plot(fig,auto_open=True)
+
+
+def printPlotlyScene3D(data):
+
+	x = []
+	y = []
+	z = []
+	colors = []
+	sz = []
+	
+	for d in data:
+		#de moment agafem la pos del robot
+
+		try:
+			if d["robot_pose"][0][0] in x:
+				if d["robot_pose"][0][1] in y:
+					continue
+			x.append(d["robot_pose"][0][0])
+			y.append(d["robot_pose"][0][1])
+			
+		except:
+			continue
+
+		z.append(0.024)
+		colors.append(random.randint(1,100))
+		sz.append(int(d["rssi"][0])*(-1))
+
+
+
+	trace1 = go.Scatter3d(x=x,
+				y=y,
+				z=z,
+                mode='markers',
+                marker={'size': sz,
+                        'color': colors,
+                        'opacity': 0.6,
+                        'colorscale': 'Viridis',
+                        'line' : dict(
+                        	color = 'rgb(0,0,0)',
+                        	width = 0)
+                       });
+
+	dat = [trace1]
+	layout = go.Layout(
+    	margin=dict(
+        	l=0,
+        	r=0,
+        	b=0,
+        	t=0
+    	)
+	)
+
+	fig = go.Figure(data=dat, layout=layout)
+	plotly.offline.plot(fig,auto_open=True)
+
+def printByCanvas(data):
+
+	root = Tk()
+
+	canvas = Canvas(root, width=400, height=400, bg='white')
+	canvas.pack()
+
+	for d in data:
+		x = d["robot_pose"][0][0] + 200
+		y = d["robot_pose"][0][1] + 200
+
+		canvas.create_arc(x-20,y-40,x+20,y, start=0, extent=180)
+
+
+	root.mainloop()
+
+
+
+
 
 print("Creating scene...")
 size = 25
@@ -158,7 +244,7 @@ scene = createScene(size)
 print("Scene " +str(size)+ "x" +str(size)+ " created")
 
 print("Reading data...")
-jsonData = readJSON()
+jsonData = readJSON('dades/181005-080248-C2.json')
 print("Done.")
 
 print("Getting important variables...")
@@ -180,7 +266,16 @@ sceneArea = getAreas(relevantData,scene)
 print("Done")
 """
 #print(printScene(sceneArea,size))
-printPlotlyScene(size,relevantData)
+
+#Plotly 
+#2D
+printPlotlyScene2D(relevantData)
+#3D
+#printPlotlyScene3D(relevantData)
+
+#Canvas
+#printByCanvas(relevantData)
+
 
 #print(type(relevantData[0]["robot_pose"]))
 
