@@ -16,21 +16,15 @@ import random
 
 from tkinter import *
 
-def createScene(size):
-	scene = []
-	for i in xrange(size):
-		scene.append([])
-	for i in xrange(size):
-		for j in xrange(size):
-			scene[i].append(j)
-			scene[i][j] = 0
-	return scene
 
-def readJSON(jsonf):
+def readJSON(jsonf, every):
 	data = []
 	with open(jsonf,'r') as f:
+		x = 0
 		for line in f:
-			data.append(json.loads(line))
+			if x%every == 0:
+				data.append(json.loads(line))
+			x = x+1
 
 	return data
 
@@ -89,16 +83,25 @@ def getTransRotAntennas(data):
 
 	return data
 
+def getOneEpcData(data, epc):
+	
+	epcData = []
+	for d in data:
+		if d['epc'] == epc:
+			epcData.append(d)
 
-def getAreas(data,scene):
+	return epcData
+
+def getAreas(data, scene):
 	#Quaternion(w, x, y, z)
-
 	for d in data:
 		#robot 
 		r_pos = d["robot_pose"][0]
 		r_rot = d["robot_pose"][1]
-		r_x = r_pos[0]
-		r_y = r_pos[1]
+		r_x = int(r_pos[0]) + 25
+		r_y = int(r_pos[1]) + 25
+
+		""" tema orientacio
 		r_degrees = Quaternion(r_rot[3],r_rot[0],r_rot[1],r_rot[2]).degrees
 		#antenna
 		a_pos = d["ant_pose"][0]
@@ -108,15 +111,41 @@ def getAreas(data,scene):
 			a_degrees = 90
 		elif "R" in d["antenna_id"]:
 			a_degrees = -90
+		"""
+		s = 1
 
-		scene[r_x][r_y] = 1
-		print r_degrees + a_degrees
+		if d['rssi'] > -40:
+			s = 3
+		elif -40 > d['rssi'] > -60:
+			s = 2
+		else:
+			s = 1
 
+		try:
+			scene[r_x][r_y] = 1
 
+			y,x = np.ogrid[-s:s+1, -s:s+1]
+			mask = x**2 + y**2 <= s**2
+			scene[mask] = 1
+			print("YOOOOOOOOOOOOOOOOOOOO")
+		except:
+			continue
+
+		#print r_degrees + a_degrees
+	
+	return scene
+
+def initScene(size):
+	scene = []
+	for i in xrange(size):
+		scene.append([])
+	for i in xrange(size):
+		for j in xrange(size):
+			scene[i].append(j)
+			scene[i][j] = 0
 	return scene
 
 def printScene(scene, size):
-	#this method should be removed for a plot library
 	finalOut = ""
 	for i in range(0,size):
 		for j in range(0,size):
@@ -128,123 +157,8 @@ def printScene(scene, size):
 
 	return finalOut
 
-def printPlotlyScene2D(data):
-
-	x = []
-	y = []
-	colors = []
-	sz = []
-		
-	for d in data:
-		#de moment agafem la pos del robot
-		try:
-			if d["robot_pose"][0][0] in x:
-				if d["robot_pose"][0][1] in y:
-					continue
-			x.append(d["robot_pose"][0][0])
-			y.append(d["robot_pose"][0][1])
-
-		except:
-			continue
-
-		colors.append(random.randint(0,39))
-		sz.append(int(d["rssi"][0])*(-1))
-
-	fig = go.Figure()
-	fig.add_scatter(x=x,
-				y=y,
-                mode='markers',
-                marker={'size': sz,
-                        'color': colors,
-                        'opacity': 0.4,
-                        'colorscale': 'Viridis',
-                        'line' : dict(
-                        	color = 'rgb(0,0,0)',
-                        	width = 0)                        
-                       });
-	plotly.offline.plot(fig,auto_open=True)
-
-
-def printPlotlyScene3D(data):
-
-	x = []
-	y = []
-	z = []
-	colors = []
-	sz = []
-	
-	for d in data:
-		#de moment agafem la pos del robot
-
-		try:
-			if d["robot_pose"][0][0] in x:
-				if d["robot_pose"][0][1] in y:
-					continue
-			x.append(d["robot_pose"][0][0])
-			y.append(d["robot_pose"][0][1])
-			
-		except:
-			continue
-
-		z.append(0.024)
-		colors.append(random.randint(1,100))
-		sz.append(int(d["rssi"][0])*(-1))
-
-
-
-	trace1 = go.Scatter3d(x=x,
-				y=y,
-				z=z,
-                mode='markers',
-                marker={'size': sz,
-                        'color': colors,
-                        'opacity': 0.6,
-                        'colorscale': 'Viridis',
-                        'line' : dict(
-                        	color = 'rgb(0,0,0)',
-                        	width = 0)
-                       });
-
-	dat = [trace1]
-	layout = go.Layout(
-    	margin=dict(
-        	l=0,
-        	r=0,
-        	b=0,
-        	t=0
-    	)
-	)
-
-	fig = go.Figure(data=dat, layout=layout)
-	plotly.offline.plot(fig,auto_open=True)
-
-def printByCanvas(data):
-
-	root = Tk()
-
-	canvas = Canvas(root, width=400, height=400, bg='white')
-	canvas.pack()
-
-	for d in data:
-		x = d["robot_pose"][0][0] + 200
-		y = d["robot_pose"][0][1] + 200
-
-		canvas.create_arc(x-20,y-40,x+20,y, start=0, extent=180)
-
-
-	root.mainloop()
-
-
-
-
-
-print("Creating scene...")
-size = 25
-scene = createScene(size)
-print("Scene " +str(size)+ "x" +str(size)+ " created")
-
 print("Reading data...")
-jsonData = readJSON('dades/181005-080248-C2.json')
+jsonData = readJSON('dades/181005-080248-C2.json', 1)
 print("Done.")
 
 print("Getting important variables...")
@@ -259,17 +173,32 @@ print("Getting antennas position and directions...")
 relevantData = getTransRotAntennas(relevantData)
 print("Done")
 
-#print(relevantData)
-"""
-print("Getting aproximated areas...")
-sceneArea = getAreas(relevantData,scene)
+#FOR ONLY ONE EPC
+#epc -> 08285fca0e7c1254463de57b7f208400 (7 matches)
+#epc -> 082811357df0b5c347178e328ba08400 (25 matches)
+
+print("Data just for one EPC")
+oneEpcData = getOneEpcData(relevantData, "082811357df0b5c347178e328ba08400")
+print(len(oneEpcData))
 print("Done")
-"""
-#print(printScene(sceneArea,size))
+
+print("Creating scene...")
+size = 50
+scene = initScene(size)
+print("Scene " +str(size)+ "x" +str(size)+ " created")
+
+print("Getting aproximated areas...")
+sceneArea = getAreas(oneEpcData,scene)
+print("Done")
+
+print(printScene(sceneArea,size))
+
+
+
 
 #Plotly 
 #2D
-printPlotlyScene2D(relevantData)
+#printPlotlyScene2D(relevantData)
 #3D
 #printPlotlyScene3D(relevantData)
 
