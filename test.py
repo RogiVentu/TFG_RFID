@@ -126,7 +126,7 @@ def getAreas(data, scene):
 
 			y,x = np.ogrid[-s:s+1, -s:s+1]
 			mask = x**2 + y**2 <= s**2
-			scene[mask] = 1
+			scene[mask[r_x:,r_y:]] = 1
 			print("YOOOOOOOOOOOOOOOOOOOO")
 		except:
 			continue

@@ -125,9 +125,13 @@ def printByCanvas(data):
 	root.mainloop()
 
 radius = 3
-kernel = np.zeros((2*radius+1, 2*radius+1))
+kernel = np.zeros((5, 5))
+
+print kernel
+
 y,x = np.ogrid[-radius:radius+1, -radius:radius+1]
 mask = x**2 + y**2 <= radius**2
-#kernel[mask] = 1
+kernel[mask[2:,2:]] = 1
 
-print y
+print mask
+print kernel
