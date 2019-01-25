@@ -137,10 +137,13 @@ def getAreas(data, size):
 			#4rt	
 		"""
 		try:
+			
 			y,x = np.ogrid[-r_x:size-r_x, -r_y:size-r_y]
 			print(y)
 			print(x)
 			mask = x*x + y*y <= r*r
+
+			
 			scene[mask] += 1
 
 		except:
