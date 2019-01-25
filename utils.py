@@ -124,14 +124,26 @@ def printByCanvas(data):
 
 	root.mainloop()
 
+
+def initScene(size):
+	scene = []
+	for i in xrange(size):
+		scene.append([])
+	for i in xrange(size):
+		for j in xrange(size):
+			scene[i].append(j)
+			scene[i][j] = 0
+	return scene
+
+
+
 radius = 3
 kernel = np.zeros((5, 5))
 
-print kernel
-
 y,x = np.ogrid[-radius:radius+1, -radius:radius+1]
-mask = x**2 + y**2 <= radius**2
-kernel[mask[2:,2:]] = 1
+print(-radius)
+print()
+mask = x*x + y*y <= radius*radius
 
-print mask
-print kernel
+
+print mask 

@@ -3,18 +3,18 @@ import codecs
 from pprint import pprint
 
 from pyquaternion import Quaternion
-
+"""
 from plotly.offline import iplot, init_notebook_mode
 import plotly.graph_objs as go
 import plotly.io as pio
 import plotly
 import plotly.plotly as py
-
+"""
 import os
 import numpy as np
 import random
 
-from tkinter import *
+#from tkinter import *
 
 
 def readJSON(jsonf, every):
@@ -92,8 +92,9 @@ def getOneEpcData(data, epc):
 
 	return epcData
 
-def getAreas(data, scene):
+def getAreas(data, size):
 	#Quaternion(w, x, y, z)
+	scene = np.zeros((size,size))
 	for d in data:
 		#robot 
 		r_pos = d["robot_pose"][0]
@@ -101,7 +102,7 @@ def getAreas(data, scene):
 		r_x = int(r_pos[0]) + 25
 		r_y = int(r_pos[1]) + 25
 
-		""" tema orientacio
+		
 		r_degrees = Quaternion(r_rot[3],r_rot[0],r_rot[1],r_rot[2]).degrees
 		#antenna
 		a_pos = d["ant_pose"][0]
@@ -111,45 +112,48 @@ def getAreas(data, scene):
 			a_degrees = 90
 		elif "R" in d["antenna_id"]:
 			a_degrees = -90
-		"""
-		s = 1
-
-		if d['rssi'] > -40:
-			s = 3
-		elif -40 > d['rssi'] > -60:
-			s = 2
+		
+		deg = r_degrees + a_degrees
+		print(deg)
+		#agafar la mida (radi) segons el rssi (quan mes gran, mes petit es el radi)
+		r = 4
+		if d['rssi'] < -40:
+			r = 2
+		elif -40 < d['rssi'] < -60:
+			r = 3
 		else:
-			s = 1
+			r = 4
 
+		"""
+		#mirar el quadrant en que pertany
+		if 0 > deg > 90 or -270 > deg > -360:
+			#1er
+
+		if 90 > deg > 180 or -180 > deg > -270:
+			#2on
+		if 180 > deg > 270 or -90 > deg > -180:
+			#3er
+		if 270 > deg > 360 or -0 > deg > -90:
+			#4rt	
+		"""
 		try:
-			scene[r_x][r_y] = 1
+			y,x = np.ogrid[-r_x:size-r_x, -r_y:size-r_y]
+			print(y)
+			print(x)
+			mask = x*x + y*y <= r*r
+			scene[mask] += 1
 
-			y,x = np.ogrid[-s:s+1, -s:s+1]
-			mask = x**2 + y**2 <= s**2
-			scene[mask[r_x:,r_y:]] = 1
-			print("YOOOOOOOOOOOOOOOOOOOO")
 		except:
 			continue
 
-		#print r_degrees + a_degrees
-	
-	return scene
-
-def initScene(size):
-	scene = []
-	for i in xrange(size):
-		scene.append([])
-	for i in xrange(size):
-		for j in xrange(size):
-			scene[i].append(j)
-			scene[i][j] = 0
+		
 	return scene
 
 def printScene(scene, size):
 	finalOut = ""
 	for i in range(0,size):
 		for j in range(0,size):
-			finalOut += str(scene[i][j]) + "|"
+			finalOut += str(int(scene[i][j])) + "|"
 		finalOut += "\n"
 		for l in range(0, size*2-1):
 			finalOut += "-"
@@ -174,24 +178,23 @@ relevantData = getTransRotAntennas(relevantData)
 print("Done")
 
 #FOR ONLY ONE EPC
+#epc -> 08283097906a6bd50731e70d27040400 (2 matches)
+#epc -> 082863f1e52a91e435af41257f010400 (3 matches)
 #epc -> 08285fca0e7c1254463de57b7f208400 (7 matches)
 #epc -> 082811357df0b5c347178e328ba08400 (25 matches)
+#epc -> 08286e5a6486616646ad89e07f208400 (30 matches)
 
 print("Data just for one EPC")
-oneEpcData = getOneEpcData(relevantData, "082811357df0b5c347178e328ba08400")
+oneEpcData = getOneEpcData(relevantData, "08283097906a6bd50731e70d27040400")
 print(len(oneEpcData))
 print("Done")
 
 print("Creating scene...")
 size = 50
-scene = initScene(size)
+scene = getAreas(oneEpcData, size)
 print("Scene " +str(size)+ "x" +str(size)+ " created")
 
-print("Getting aproximated areas...")
-sceneArea = getAreas(oneEpcData,scene)
-print("Done")
-
-print(printScene(sceneArea,size))
+print(printScene(scene,size))
 
 
 
