@@ -139,15 +139,18 @@ def initScene(size):
 
 
 radius = 3
-kernel = np.zeros((4, 4))
+kernel = np.zeros((4, 7))
 
-y,x = np.ogrid[-radius:1, -radius:1]
+y,x = np.ogrid[-radius:1, -radius:radius +1]
 
 mask = x*x + y*y <= radius*radius
 
 
 kernel[mask] = 1
 
-
 print mask 
 print kernel
+
+aka = np.pad(kernel, ((0, 3), (0, 0)), 'constant', constant_values=(0,0))
+
+print(aka)

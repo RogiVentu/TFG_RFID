@@ -114,7 +114,7 @@ def getAreas(data, size):
 			a_degrees = -90
 		
 		deg = r_degrees + a_degrees
-		print(deg)
+
 		#agafar la mida (radi) segons el rssi (quan mes gran, mes petit es el radi)
 		r = 4
 		if d['rssi'] < -40:
@@ -125,22 +125,23 @@ def getAreas(data, size):
 			r = 4
 
 		"""
-		#mirar el quadrant en que pertany
-		if 0 > deg > 90 or -270 > deg > -360:
-			#1er
+		#mirar el sentit en que pertany
+		if 45 > deg > -45 or 315 < deg or -315 > deg:
+			#est
 
-		if 90 > deg > 180 or -180 > deg > -270:
-			#2on
-		if 180 > deg > 270 or -90 > deg > -180:
-			#3er
-		if 270 > deg > 360 or -0 > deg > -90:
-			#4rt	
+		if 45 < deg < 135 or -225 > deg > -315:
+			#nord
+
+		if 135 < deg < 225 or -135 > deg > -225:
+			#oest
+
+		if 225 < deg < 315 or -45 > deg > -135:
+			#sud
+				
 		"""
 		try:
 			
 			y,x = np.ogrid[-r_x:size-r_x, -r_y:size-r_y]
-			print(y)
-			print(x)
 			mask = x*x + y*y <= r*r
 
 			
