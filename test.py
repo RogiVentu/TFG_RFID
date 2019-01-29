@@ -124,28 +124,63 @@ def getAreas(data, size):
 		else:
 			r = 4
 
-		"""
+		
 		#mirar el sentit en que pertany
+		print(deg)
+		orientation = "nord"
 		if 45 > deg > -45 or 315 < deg or -315 > deg:
-			#est
+			orientation = "est"
 
 		if 45 < deg < 135 or -225 > deg > -315:
-			#nord
+			orientation = "nord"
 
 		if 135 < deg < 225 or -135 > deg > -225:
-			#oest
+			orientation = "oest"
 
 		if 225 < deg < 315 or -45 > deg > -135:
-			#sud
-				
-		"""
+			orientation = "sud"
+		
 		try:
-			
+			"""En circulo
 			y,x = np.ogrid[-r_x:size-r_x, -r_y:size-r_y]
 			mask = x*x + y*y <= r*r
-
-			
 			scene[mask] += 1
+			"""
+
+			if orientation == "est":
+
+				aux_scene = np.zeros((r*2+1,r+1))
+				y,x = np.ogrid[-r:r+1, 0:r+1]
+				mask = x*x + y*y <= r*r
+				aux_scene[mask] = 1
+				aux_scene = np.pad(aux_scene, ((r_y-r-1, 50-r_y-r), (r_x-1, 50-r_x-r)), 'constant', constant_values=(0,0))
+			
+			elif orientation == "nord":
+
+				aux_scene = np.zeros((r+1,r*2+1))
+				y,x = np.ogrid[-r:1, -r:r+1]
+				mask = x*x + y*y <= r*r
+				aux_scene[mask] = 1
+				aux_scene = np.pad(aux_scene, ((r_y-r-1, 50-r_y), (r_x-r-1, 50-r_x-r)), 'constant', constant_values=(0,0))
+
+			elif orientation == "oest":
+
+				aux_scene = np.zeros((r*2+1,r+1))
+				y,x = np.ogrid[-r:r+1, -r:1]
+				mask = x*x + y*y <= r*r
+				aux_scene[mask] = 1
+				aux_scene = np.pad(aux_scene, ((r_y-r-1, 50-r_y-r), (r_x-r-1, 50-r_x)), 'constant', constant_values=(0,0))
+
+			elif orientation == "sud":
+
+				aux_scene = np.zeros((r+1,r*2+1))
+				y,x = np.ogrid[0:r+1, -r:r+1]
+				mask = x*x + y*y <= r*r
+				aux_scene[mask] = 1
+				aux_scene = np.pad(aux_scene, ((r_y-1, 50-r_y-r), (r_x-r-1, 50-r_x-r)), 'constant', constant_values=(0,0))
+			
+
+			scene = scene + aux_scene
 
 		except:
 			continue
@@ -189,7 +224,7 @@ print("Done")
 #epc -> 08286e5a6486616646ad89e07f208400 (30 matches)
 
 print("Data just for one EPC")
-oneEpcData = getOneEpcData(relevantData, "08283097906a6bd50731e70d27040400")
+oneEpcData = getOneEpcData(relevantData, "08286e5a6486616646ad89e07f208400")
 print(len(oneEpcData))
 print("Done")
 
