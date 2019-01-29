@@ -126,8 +126,8 @@ def getAreas(data, size):
 
 		
 		#mirar el sentit en que pertany
-		print(deg)
 		orientation = "nord"
+		
 		if 45 > deg > -45 or 315 < deg or -315 > deg:
 			orientation = "est"
 
@@ -153,7 +153,7 @@ def getAreas(data, size):
 				y,x = np.ogrid[-r:r+1, 0:r+1]
 				mask = x*x + y*y <= r*r
 				aux_scene[mask] = 1
-				aux_scene = np.pad(aux_scene, ((r_y-r-1, 50-r_y-r), (r_x-1, 50-r_x-r)), 'constant', constant_values=(0,0))
+				aux_scene = np.pad(aux_scene, ((r_y-r-1, size-r_y-r), (r_x-1, size-r_x-r)), 'constant', constant_values=(0,0))
 			
 			elif orientation == "nord":
 
@@ -161,7 +161,7 @@ def getAreas(data, size):
 				y,x = np.ogrid[-r:1, -r:r+1]
 				mask = x*x + y*y <= r*r
 				aux_scene[mask] = 1
-				aux_scene = np.pad(aux_scene, ((r_y-r-1, 50-r_y), (r_x-r-1, 50-r_x-r)), 'constant', constant_values=(0,0))
+				aux_scene = np.pad(aux_scene, ((r_y-r-1, size-r_y), (r_x-r-1, size-r_x-r)), 'constant', constant_values=(0,0))
 
 			elif orientation == "oest":
 
@@ -169,7 +169,7 @@ def getAreas(data, size):
 				y,x = np.ogrid[-r:r+1, -r:1]
 				mask = x*x + y*y <= r*r
 				aux_scene[mask] = 1
-				aux_scene = np.pad(aux_scene, ((r_y-r-1, 50-r_y-r), (r_x-r-1, 50-r_x)), 'constant', constant_values=(0,0))
+				aux_scene = np.pad(aux_scene, ((r_y-r-1, size-r_y-r), (r_x-r-1, size-r_x)), 'constant', constant_values=(0,0))
 
 			elif orientation == "sud":
 
@@ -177,7 +177,7 @@ def getAreas(data, size):
 				y,x = np.ogrid[0:r+1, -r:r+1]
 				mask = x*x + y*y <= r*r
 				aux_scene[mask] = 1
-				aux_scene = np.pad(aux_scene, ((r_y-1, 50-r_y-r), (r_x-r-1, 50-r_x-r)), 'constant', constant_values=(0,0))
+				aux_scene = np.pad(aux_scene, ((r_y-1, size-r_y-r), (r_x-r-1, size-r_x-r)), 'constant', constant_values=(0,0))
 			
 
 			scene = scene + aux_scene
@@ -199,6 +199,13 @@ def printScene(scene, size):
 		finalOut += "\n"
 
 	return finalOut
+
+def getMaxPos(scene):
+
+	i,j = np.unravel_index(scene.argmax(), scene.shape)
+	posMax = "Position: %s, %s / Value: %s" % (j+1, i+1, scene[i,j])
+
+	return posMax 
 
 print("Reading data...")
 jsonData = readJSON('dades/181005-080248-C2.json', 1)
@@ -233,7 +240,11 @@ size = 50
 scene = getAreas(oneEpcData, size)
 print("Scene " +str(size)+ "x" +str(size)+ " created")
 
+
 print(printScene(scene,size))
+
+print("Getting aproximated product position...")
+print(getMaxPos(scene))
 
 
 
