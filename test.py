@@ -124,7 +124,8 @@ def getAreas(data, size):
 		else:
 			r = 4
 
-		print(d['rssi'], r)
+		#print(d['rssi'], r)
+
 		#mirar el sentit en que pertany
 		orientation = "nord"
 
@@ -265,10 +266,3 @@ print(getMaxPos(scene))
 
 #Canvas
 #printByCanvas(relevantData)
-
-
-#print(type(relevantData[0]["robot_pose"]))
-
-#print "Write data... \nFormat: posX,posY,dir \nExample: 33,70,top"
-#x,y,dire = raw_input().split(",")
-#print "Detection saved in position ("+str(x)+","+str(y)+") looking at " + dire + "."
