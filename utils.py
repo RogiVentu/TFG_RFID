@@ -14,8 +14,6 @@ import os
 import numpy as np
 import random
 
-from tkinter import *
-from scipy.ndimage.filters import convolve
 
 
 
@@ -139,9 +137,9 @@ def initScene(size):
 
 
 radius = 3
-kernel = np.zeros((4, 7))
+kernel = np.zeros((7, 7))
 
-y,x = np.ogrid[-radius:1, -radius:radius +1]
+y,x = np.ogrid[-radius:radius+1, -radius:radius +1]
 
 mask = x*x + y*y <= radius*radius
 
@@ -152,5 +150,3 @@ print mask
 print kernel
 
 aka = np.pad(kernel, ((0, 3), (0, 0)), 'constant', constant_values=(0,0))
-
-print(aka)
