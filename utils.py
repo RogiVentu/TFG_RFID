@@ -13,16 +13,43 @@ import plotly.plotly as py
 import os
 import numpy as np
 import random
+import math
 
+def getSemiCircleAreas(r,angle,x,y,scene):
 
+	if angle > 180:
+		angle = angle -180
+	elif angle < 0 and angle > -180:
+		angle = angle + 180
+	else:
+		angle = angle + 360
+		
+	df = angle+60
+	dt = angle-60
 
+	print(angle,df,dt)
+
+	for i in range(-r,r):
+		for j in range(-r,r):
+			h = float(math.sqrt(i**2 + j**2))
+			if h < r:
+				if h == 0:
+					phi = angle
+				else:
+					phi = math.acos(float(i)/float(h))
+					phi = math.degrees(phi)
+				print(phi)
+				if phi < df and phi > dt:
+					scene[x+i][y+j] += 1
+					print(x+i, y+j)
+	return scene
 
 def printPlotlyScene2D(data):
 
 	x = []
 	y = []
 	colors = []
-	sz = []
+	sz = []	
 		
 	for d in data:
 		#de moment agafem la pos del robot
@@ -146,7 +173,7 @@ mask = x*x + y*y <= radius*radius
 
 kernel[mask] = 1
 
-print mask 
-print kernel
+#print mask 
+#print kernel
 
 aka = np.pad(kernel, ((0, 3), (0, 0)), 'constant', constant_values=(0,0))

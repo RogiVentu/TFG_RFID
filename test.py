@@ -3,6 +3,7 @@ import codecs
 from pprint import pprint
 
 from pyquaternion import Quaternion
+from utils import getSemiCircleAreas
 """
 from plotly.offline import iplot, init_notebook_mode
 import plotly.graph_objs as go
@@ -126,6 +127,9 @@ def getAreas(data, size):
 
 		#print(d['rssi'], r)
 
+		#new Method
+		scene = getSemiCircleAreas(r,deg,r_x,r_y,scene)
+		"""
 		#mirar el sentit en que pertany
 		orientation = "nord"
 
@@ -141,12 +145,13 @@ def getAreas(data, size):
 		if 225 < deg < 315 or -45 > deg > -135:
 			orientation = "sud"
 		
+
 		try:
-			"""En circulo
+			#En circulo
 			y,x = np.ogrid[-r_x:size-r_x, -r_y:size-r_y]
 			mask = x*x + y*y <= r*r
 			scene[mask] += 1
-			"""
+			
 
 			if orientation == "est":
 
@@ -182,9 +187,9 @@ def getAreas(data, size):
 			
 
 			scene = scene + aux_scene
-
+	
 		except:
-			continue
+			continue"""
 
 		
 	return scene
