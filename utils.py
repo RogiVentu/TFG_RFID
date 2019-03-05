@@ -1,29 +1,24 @@
-import json
-import codecs
-from pprint import pprint
-
-from pyquaternion import Quaternion
-
-from plotly.offline import iplot, init_notebook_mode
 import plotly.graph_objs as go
-import plotly.io as pio
 import plotly
-import plotly.plotly as py
 
-import os
 import numpy as np
 import random
 import math
 
+
 def getSemiCircleAreas(r,angle,x,y,scene):
 
+	"""
 	if angle > 180:
 		angle = angle -180
+	elif angle > 0 and angle < 180:
+		angle = angle
 	elif angle < 0 and angle > -180:
 		angle = angle + 180
 	else:
 		angle = angle + 360
-		
+	"""
+
 	df = angle+60
 	dt = angle-60
 
@@ -36,13 +31,21 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 				if h == 0:
 					phi = angle
 				else:
-					phi = math.acos(float(i)/float(h))
+					aux = float(i)/float(h)
+					phi = math.acos(aux)
 					phi = math.degrees(phi)
-				print(phi)
+				
 				if phi < df and phi > dt:
-					scene[x+i][y+j] += 1
-					print(x+i, y+j)
+					scene[x+j][y+i] += 1
+					print(phi,i,j)
+					print(x+j, y+i)
 	return scene
+
+
+scene = np.zeros((9,9))
+sce = getSemiCircleAreas(4,90,4,4,scene)
+print(sce)
+
 
 def printPlotlyScene2D(data):
 
@@ -162,7 +165,7 @@ def initScene(size):
 	return scene
 
 
-
+"""
 radius = 3
 kernel = np.zeros((7, 7))
 
@@ -177,3 +180,4 @@ kernel[mask] = 1
 #print kernel
 
 aka = np.pad(kernel, ((0, 3), (0, 0)), 'constant', constant_values=(0,0))
+"""

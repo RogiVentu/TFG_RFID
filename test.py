@@ -84,8 +84,9 @@ def getTransRotAntennas(data):
 
 	return data
 
+
 def getOneEpcData(data, epc):
-	
+
 	epcData = []
 	for d in data:
 		if d['epc'] == epc:
@@ -115,6 +116,7 @@ def getAreas(data, size):
 			a_degrees = -90
 		
 		deg = r_degrees + a_degrees
+		print('angles: ' + str(r_degrees), str(deg))
 
 		#agafar la mida (radi) segons el rssi (quan mes gran, mes petit es el radi)
 		r = 4
@@ -128,7 +130,7 @@ def getAreas(data, size):
 		#print(d['rssi'], r)
 
 		#new Method
-		scene = getSemiCircleAreas(r,deg,r_x,r_y,scene)
+		#scene = getSemiCircleAreas(r,deg,r_x,r_y,scene)
 		"""
 		#mirar el sentit en que pertany
 		orientation = "nord"
@@ -246,7 +248,7 @@ print("Done")
 #epc -> 08286e5a6486616646ad89e07f208400 (33 matches)
 #epc -> 082823768fc931dc5623205540c00400 (36 matches)
 
-epc = "08283097906a6bd50731e70d27040400"
+epc = "082823768fc931dc5623205540c00400"
 
 print("Data just for one EPC")
 oneEpcData = getOneEpcData(relevantData, epc)
