@@ -249,7 +249,7 @@ print("Done")
 #epc -> 08286e5a6486616646ad89e07f208400 (33 matches)
 #epc -> 082823768fc931dc5623205540c00400 (36 matches)
 
-epc = "08283097906a6bd50731e70d27040400"
+epc = "082811357f7754d72d4a0ce227818400"
 
 print("Data just for one EPC")
 oneEpcData = getOneEpcData(relevantData, epc)
