@@ -1,5 +1,6 @@
 import plotly.graph_objs as go
 import plotly
+from pyquaternion import Quaternion
 
 import numpy as np
 import random
@@ -18,7 +19,8 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 	else:
 		angle = angle + 360
 	"""
-
+	if angle < 0:
+		angle = angle + 360
 	df = angle+60
 	dt = angle-60
 
@@ -26,6 +28,8 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 
 	for i in range(-r,r):
 		for j in range(-r,r):
+			if x+j > 49 or x+i > 49:
+				continue
 			h = float(math.sqrt(i**2 + j**2))
 			if h < r:
 				if h == 0:
@@ -38,7 +42,6 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 					phi = 360 - phi
 				elif i >= 0 and j > 0:
 					phi = 360 - phi
-				print(phi)
 				if dt < 0:
 					if phi < df or phi > (dt+360):
 						scene[x+j][y+i] += 1
@@ -52,10 +55,10 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 	return scene
 
 
-scene = np.zeros((9,9))
-sce = getSemiCircleAreas(4,300,4,4,scene)
-print(sce)
-
+#scene = np.zeros((9,9))
+#sce = getSemiCircleAreas(4,300,4,4,scene)
+#print(sce)
+#print(Quaternion(0.7446857431941718, 0.0, 0.0, -0.6674152709395734 ).degrees)
 
 def printPlotlyScene2D(data):
 
