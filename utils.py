@@ -34,16 +34,26 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 					aux = float(i)/float(h)
 					phi = math.acos(aux)
 					phi = math.degrees(phi)
-				
-				if phi < df and phi > dt:
-					scene[x+j][y+i] += 1
-					print(phi,i,j)
-					print(x+j, y+i)
+				if i <= 0 and j > 0:
+					phi = 360 - phi
+				elif i >= 0 and j > 0:
+					phi = 360 - phi
+				print(phi)
+				if dt < 0:
+					if phi < df or phi > (dt+360):
+						scene[x+j][y+i] += 1
+						print(phi,i,j)
+						print(x+j, y+i) 
+				else:
+					if phi < df and phi > dt:
+						scene[x+j][y+i] += 1
+						print(phi,i,j)
+						print(x+j, y+i)
 	return scene
 
 
 scene = np.zeros((9,9))
-sce = getSemiCircleAreas(4,90,4,4,scene)
+sce = getSemiCircleAreas(4,300,4,4,scene)
 print(sce)
 
 
