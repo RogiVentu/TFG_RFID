@@ -221,9 +221,11 @@ Real position: (%s, %s).
 	return posMax
 
 
-
+#jsons
+#1.-181005-080248-C2.json
+#2.-181127-125006-D1.json
 print("Reading data...")
-jsonData = readJSON('dades/181005-080248-C2.json', 1)
+jsonData = readJSON('dades/181127-125006-D1.json', 1)
 print("Done.")
 
 print("Getting important variables...")
@@ -238,7 +240,8 @@ print("Getting antennas position and directions...")
 relevantData = getTransRotAntennas(relevantData)
 print("Done")
 
-#FOR ONLY ONE EPC
+#FOR ONLY ONE EPC 
+#1.-json
 #epc -> 08283097906a6bd50731e70d27040400 (2 matches)
 #epc -> 082863f1e52a91e435af41257f010400 (3 matches)
 #epc -> 08285fca0e7c1254463de57b7f208400 (7 matches)
@@ -249,7 +252,13 @@ print("Done")
 #epc -> 08286e5a6486616646ad89e07f208400 (33 matches)
 #epc -> 082823768fc931dc5623205540c00400 (36 matches)
 
-epc = "082811357f7754d72d4a0ce227818400"
+#2.-json
+#epc -> bcc8c8762300002e92480130 (23 matches, group 2_6)
+#epc -> bc8c3448e600002e92479b8a (3 matches, group 1_1)
+#epc -> bcbb656f2400002e92398a42 (15 matches, group 1_1)
+#epc -> bce8efaa0e00002e923294b4 (13 matches, group 2_9)
+
+epc = "bce8efaa0e00002e923294b4"
 
 print("Data just for one EPC")
 oneEpcData = getOneEpcData(relevantData, epc)
