@@ -14,6 +14,7 @@ import plotly.plotly as py
 import os
 import numpy as np
 import random
+import math
 
 #from tkinter import *
 
@@ -94,9 +95,26 @@ def getOneEpcData(data, epc):
 
 	return epcData
 
-def getAreas(data, size):
+def addFakeTags(scene):
+	#12 fake tags
+	for i in range(1,5):
+		x = i*10
+		for j in range(1,5):
+			y = j*10
+			scene[x][y] += 10
+			for t in range(-9,9):
+				k = t + x
+				for h in range(-9,9):
+					#hipotenusa
+					l = h + y
+					hipo = float(math.sqrt(t**2 + h**2))
+					print(hipo, k, l)
+
+					scene[k][l] = 10 - int(hipo)
+	return scene
+
+def getAreas(data, size, scene):
 	#Quaternion(w, x, y, z)
-	scene = np.zeros((size,size))
 	for d in data:
 		#robot 
 		r_pos = d["robot_pose"][0]
@@ -128,73 +146,7 @@ def getAreas(data, size):
 		else:
 			r = 4
 
-		#print(d['rssi'], r)
-
-		#new Method
 		scene = getSemiCircleAreas(r,deg,r_x,r_y,scene)
-		"""
-		#mirar el sentit en que pertany
-		orientation = "nord"
-
-		if 45 > deg > -45 or 315 < deg or -315 > deg:
-			orientation = "est"
-
-		if 45 < deg < 135 or -225 > deg > -315:
-			orientation = "nord"
-
-		if 135 < deg < 225 or -135 > deg > -225:
-			orientation = "oest"
-
-		if 225 < deg < 315 or -45 > deg > -135:
-			orientation = "sud"
-		
-
-		try:
-			#En circulo
-			y,x = np.ogrid[-r_x:size-r_x, -r_y:size-r_y]
-			mask = x*x + y*y <= r*r
-			scene[mask] += 1
-			
-
-			if orientation == "est":
-
-				aux_scene = np.zeros((r*2+1,r+1))
-				y,x = np.ogrid[-r:r+1, 0:r+1]
-				mask = x*x + y*y <= r*r
-				aux_scene[mask] = 1
-				aux_scene = np.pad(aux_scene, ((r_y-r-1, size-r_y-r), (r_x-1, size-r_x-r)), 'constant', constant_values=(0,0))
-			
-			elif orientation == "nord":
-
-				aux_scene = np.zeros((r+1,r*2+1))
-				y,x = np.ogrid[-r:1, -r:r+1]
-				mask = x*x + y*y <= r*r
-				aux_scene[mask] = 1
-				aux_scene = np.pad(aux_scene, ((r_y-r-1, size-r_y), (r_x-r-1, size-r_x-r)), 'constant', constant_values=(0,0))
-
-			elif orientation == "oest":
-
-				aux_scene = np.zeros((r*2+1,r+1))
-				y,x = np.ogrid[-r:r+1, -r:1]
-				mask = x*x + y*y <= r*r
-				aux_scene[mask] = 1
-				aux_scene = np.pad(aux_scene, ((r_y-r-1, size-r_y-r), (r_x-r-1, size-r_x)), 'constant', constant_values=(0,0))
-
-			elif orientation == "sud":
-
-				aux_scene = np.zeros((r+1,r*2+1))
-				y,x = np.ogrid[0:r+1, -r:r+1]
-				mask = x*x + y*y <= r*r
-				aux_scene[mask] = 1
-				aux_scene = np.pad(aux_scene, ((r_y-1, size-r_y-r), (r_x-r-1, size-r_x-r)), 'constant', constant_values=(0,0))
-			
-
-			scene = scene + aux_scene
-	
-		except:
-			continue"""
-
-		
 	return scene
 
 def printScene(scene, size):
@@ -220,12 +172,11 @@ Real position: (%s, %s).
 
 	return posMax
 
-
 #jsons
 #1.-181005-080248-C2.json
 #2.-181127-125006-D1.json
 print("Reading data...")
-jsonData = readJSON('dades/181127-125006-D1.json', 1)
+jsonData = readJSON('dades/181005-080248-C2.json', 1)
 print("Done.")
 
 print("Getting important variables...")
@@ -258,7 +209,7 @@ print("Done")
 #epc -> bcbb656f2400002e92398a42 (15 matches, group 1_1)
 #epc -> bce8efaa0e00002e923294b4 (13 matches, group 2_9)
 
-epc = "bce8efaa0e00002e923294b4"
+epc = "082811357f7754d72d4a0ce227818400"
 
 print("Data just for one EPC")
 oneEpcData = getOneEpcData(relevantData, epc)
@@ -267,10 +218,13 @@ print("Done")
 
 print("Creating scene...")
 size = 50
-scene = getAreas(oneEpcData, size)
+scene = np.zeros((size,size))
+scene = addFakeTags(scene)
+print(printScene(scene,size))
+scene = getAreas(oneEpcData, size, scene)
 print("Scene " +str(size)+ "x" +str(size)+ " created")
 
-print(printScene(scene,size))
+#print(printScene(scene,size))
 
 print("Getting aproximated product position...\n")
 print(getMaxPos(scene))
