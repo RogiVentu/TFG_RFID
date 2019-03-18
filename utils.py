@@ -60,6 +60,29 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 #print(sce)
 #print(Quaternion(0.7446857431941718, 0.0, 0.0, -0.6674152709395734 ).degrees)
 
+
+def addFakeTags(size):
+	sceneTags = []
+	for x in range(1,5):
+		x = x*10
+		for y in range(1,5):
+			y = y*10
+			scene = np.zeros((size,size))
+			sceneTags.append(addFakeCaptions(scene,x,y))
+	return sceneTags
+
+def addFakeCaptions(scene, x,y):
+	for i in range(-9,9):
+		k = i + x
+		for j in range(-9,9):
+			#hipotenusa
+			l = j + y
+			hipo = float(math.sqrt(i**2 + j**2))
+			if hipo <= 10:
+				scene[k][l] = 10 - int(hipo)
+
+	return scene
+
 def printPlotlyScene2D(data):
 
 	x = []

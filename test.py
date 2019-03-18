@@ -3,7 +3,7 @@ import codecs
 from pprint import pprint
 
 from pyquaternion import Quaternion
-from utils import getSemiCircleAreas
+from utils import *
 """
 from plotly.offline import iplot, init_notebook_mode
 import plotly.graph_objs as go
@@ -95,24 +95,6 @@ def getOneEpcData(data, epc):
 
 	return epcData
 
-def addFakeTags(scene):
-	#12 fake tags
-	for i in range(1,5):
-		x = i*10
-		for j in range(1,5):
-			y = j*10
-			scene[x][y] += 10
-			for t in range(-9,9):
-				k = t + x
-				for h in range(-9,9):
-					#hipotenusa
-					l = h + y
-					hipo = float(math.sqrt(t**2 + h**2))
-					print(hipo, k, l)
-
-					scene[k][l] = 10 - int(hipo)
-	return scene
-
 def getAreas(data, size, scene):
 	#Quaternion(w, x, y, z)
 	for d in data:
@@ -172,6 +154,22 @@ Real position: (%s, %s).
 
 	return posMax
 
+def compareSceneWithTags(sceneTags, scene):
+	max_sum = 0
+	max_tag = 0
+	count = 0
+	for tag in sceneTags:
+		count += 1
+		multMatrixs = tag * scene
+		#print(printScene(multMatrixs, 50))
+		sumMat = multMatrixs.sum()
+		if sumMat > max_sum:
+			max_tag = count
+			max_sum = sumMat
+			print(printScene(multMatrixs, 50))
+
+	return (max_tag, max_sum)
+
 #jsons
 #1.-181005-080248-C2.json
 #2.-181127-125006-D1.json
@@ -209,7 +207,7 @@ print("Done")
 #epc -> bcbb656f2400002e92398a42 (15 matches, group 1_1)
 #epc -> bce8efaa0e00002e923294b4 (13 matches, group 2_9)
 
-epc = "082811357f7754d72d4a0ce227818400"
+epc = "08285fca0e7c1254463de57b7f208400"
 
 print("Data just for one EPC")
 oneEpcData = getOneEpcData(relevantData, epc)
@@ -219,15 +217,28 @@ print("Done")
 print("Creating scene...")
 size = 50
 scene = np.zeros((size,size))
-scene = addFakeTags(scene)
-print(printScene(scene,size))
 scene = getAreas(oneEpcData, size, scene)
 print("Scene " +str(size)+ "x" +str(size)+ " created")
-
-#print(printScene(scene,size))
+print(printScene(scene,size))
 
 print("Getting aproximated product position...\n")
 print(getMaxPos(scene))
+
+#Creating 16 fake tags.
+print("Creating 16 fake tags")
+sceneTags = addFakeTags(size)
+"""
+for sce in sceneTags:
+	print(printScene(sce, size))
+"""
+
+print("Looking for the nearest Tag to the scene")
+mostNearTagToScene = compareSceneWithTags(sceneTags, scene)
+print("The tag number " + str(mostNearTagToScene[0]) + " is the nearest with the sum: " + str(mostNearTagToScene[1]))
+
+print(printScene(sceneTags[mostNearTagToScene[0]-1],size))
+print(printScene(scene,size))
+
 
 #Plotly 
 #2D
