@@ -129,6 +129,55 @@ def getAreas(data, size, scene):
 			r = 4
 
 		scene = getSemiCircleAreas(r,deg,r_x,r_y,scene)
+		"""
+		#mirar el sentit en que pertany
+		orientation = "nord"
+		if 45 > deg > -45 or 315 < deg or -315 > deg:
+			orientation = "est"
+		if 45 < deg < 135 or -225 > deg > -315:
+			orientation = "nord"
+		if 135 < deg < 225 or -135 > deg > -225:
+			orientation = "oest"
+		if 225 < deg < 315 or -45 > deg > -135:
+			orientation = "sud"
+		
+		try:
+			#En circulo
+			y,x = np.ogrid[-r_x:size-r_x, -r_y:size-r_y]
+			mask = x*x + y*y <= r*r
+			scene[mask] += 1
+			
+			if orientation == "est":
+				aux_scene = np.zeros((r*2+1,r+1))
+				y,x = np.ogrid[-r:r+1, 0:r+1]
+				mask = x*x + y*y <= r*r
+				aux_scene[mask] = 1
+				aux_scene = np.pad(aux_scene, ((r_y-r-1, size-r_y-r), (r_x-1, size-r_x-r)), 'constant', constant_values=(0,0))
+			
+			elif orientation == "nord":
+				aux_scene = np.zeros((r+1,r*2+1))
+				y,x = np.ogrid[-r:1, -r:r+1]
+				mask = x*x + y*y <= r*r
+				aux_scene[mask] = 1
+				aux_scene = np.pad(aux_scene, ((r_y-r-1, size-r_y), (r_x-r-1, size-r_x-r)), 'constant', constant_values=(0,0))
+			elif orientation == "oest":
+				aux_scene = np.zeros((r*2+1,r+1))
+				y,x = np.ogrid[-r:r+1, -r:1]
+				mask = x*x + y*y <= r*r
+				aux_scene[mask] = 1
+				aux_scene = np.pad(aux_scene, ((r_y-r-1, size-r_y-r), (r_x-r-1, size-r_x)), 'constant', constant_values=(0,0))
+			elif orientation == "sud":
+				aux_scene = np.zeros((r+1,r*2+1))
+				y,x = np.ogrid[0:r+1, -r:r+1]
+				mask = x*x + y*y <= r*r
+				aux_scene[mask] = 1
+				aux_scene = np.pad(aux_scene, ((r_y-1, size-r_y-r), (r_x-r-1, size-r_x-r)), 'constant', constant_values=(0,0))
+			
+			scene = scene + aux_scene
+	
+		except:
+			continue
+		"""
 	return scene
 
 def printScene(scene, size):
@@ -207,7 +256,7 @@ print("Done")
 #epc -> bcbb656f2400002e92398a42 (15 matches, group 1_1)
 #epc -> bce8efaa0e00002e923294b4 (13 matches, group 2_9)
 
-epc = "08285fca0e7c1254463de57b7f208400"
+epc = "082811357f7754d72d4a0ce227818400"
 
 print("Data just for one EPC")
 oneEpcData = getOneEpcData(relevantData, epc)
