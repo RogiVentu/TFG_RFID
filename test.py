@@ -215,7 +215,7 @@ def compareSceneWithTags(sceneTags, scene):
 		if sumMat > max_sum:
 			max_tag = count
 			max_sum = sumMat
-			print(printScene(multMatrixs, 50))
+			#print(printScene(multMatrixs, 50))
 
 	return (max_tag, max_sum)
 
@@ -268,7 +268,7 @@ size = 50
 scene = np.zeros((size,size))
 scene = getAreas(oneEpcData, size, scene)
 print("Scene " +str(size)+ "x" +str(size)+ " created")
-print(printScene(scene,size))
+#print(printScene(scene,size))
 
 print("Getting aproximated product position...\n")
 print(getMaxPos(scene))
@@ -283,11 +283,13 @@ for sce in sceneTags:
 
 print("Looking for the nearest Tag to the scene")
 mostNearTagToScene = compareSceneWithTags(sceneTags, scene)
-print("The tag number " + str(mostNearTagToScene[0]) + " is the nearest with the sum: " + str(mostNearTagToScene[1]))
 
-print(printScene(sceneTags[mostNearTagToScene[0]-1],size))
 print(printScene(scene,size))
 
+print("The tag number " + str(mostNearTagToScene[0]) + " is the nearest with the sum: " + str(mostNearTagToScene[1]) + "\n")
+
+print(printScene(sceneTags[mostNearTagToScene[0]-1],size))
+print("The tag number " + str(mostNearTagToScene[0]) + " is the nearest with the sum: " + str(mostNearTagToScene[1]))
 
 #Plotly 
 #2D
