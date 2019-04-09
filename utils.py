@@ -28,7 +28,7 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 
 	for i in range(-r,r):
 		for j in range(-r,r):
-			if x+j > 49 or x+i > 49:
+			if x+j > 159 or x+i > 159:
 				continue
 			h = float(math.sqrt(i**2 + j**2))
 			if h < r:
@@ -51,7 +51,7 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 					if phi < df and phi > dt:
 						scene[x+j][y+i] += 1
 						#print(phi,i,j)
-						#print(x+j, y+i)
+						print(x+j, y+i)
 	return scene
 
 

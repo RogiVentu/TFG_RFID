@@ -101,8 +101,8 @@ def getAreas(data, size, scene):
 		#robot 
 		r_pos = d["robot_pose"][0]
 		r_rot = d["robot_pose"][1]
-		r_x = int(r_pos[0]) + 25
-		r_y = int(r_pos[1]) + 25
+		r_x = int(r_pos[0]*10 + 80)
+		r_y = int(r_pos[1]*10 + 80)
 
 		
 		r_degrees = Quaternion(r_rot[3],r_rot[0],r_rot[1],r_rot[2]).degrees
@@ -199,7 +199,7 @@ def getMaxPos(scene):
 Value (number of captations): %s.
 Real position: (%s, %s).
 
-			""" % (j+1, i+1, scene[i,j], j-24, i-24)
+			""" % (j+1, i+1, scene[i,j], j-79, i-79)
 
 	return posMax
 
@@ -223,7 +223,7 @@ def compareSceneWithTags(sceneTags, scene):
 #1.-181005-080248-C2.json
 #2.-181127-125006-D1.json
 print("Reading data...")
-jsonData = readJSON('dades/181005-080248-C2.json', 1)
+jsonData = readJSON('dades/181127-125006-D1.json', 1)
 print("Done.")
 
 print("Getting important variables...")
@@ -256,7 +256,7 @@ print("Done")
 #epc -> bcbb656f2400002e92398a42 (15 matches, group 1_1)
 #epc -> bce8efaa0e00002e923294b4 (13 matches, group 2_9)
 
-epc = "082811357f7754d72d4a0ce227818400"
+epc = "bcc8c8762300002e92480130"
 
 print("Data just for one EPC")
 oneEpcData = getOneEpcData(relevantData, epc)
@@ -264,38 +264,26 @@ print("This EPC (" + epc + ") has " + str(len(oneEpcData)) + " captions")
 print("Done")
 
 print("Creating scene...")
-size = 50
+size = 160 #-8 to 8 = 16x16 (json D) *10
 scene = np.zeros((size,size))
 scene = getAreas(oneEpcData, size, scene)
 print("Scene " +str(size)+ "x" +str(size)+ " created")
-#print(printScene(scene,size))
+print(printScene(scene,size))
 
 print("Getting aproximated product position...\n")
 print(getMaxPos(scene))
 
 #Creating 16 fake tags.
-print("Creating 16 fake tags")
-sceneTags = addFakeTags(size)
+#print("Creating 16 fake tags")
+#sceneTags = addFakeTags(size)
 """
 for sce in sceneTags:
 	print(printScene(sce, size))
 """
 
-print("Looking for the nearest Tag to the scene")
-mostNearTagToScene = compareSceneWithTags(sceneTags, scene)
+#print("Looking for the nearest Tag to the scene")
+#mostNearTagToScene = compareSceneWithTags(sceneTags, scene)
 
-print(printScene(scene,size))
-
-print("The tag number " + str(mostNearTagToScene[0]) + " is the nearest with the sum: " + str(mostNearTagToScene[1]) + "\n")
-
-print(printScene(sceneTags[mostNearTagToScene[0]-1],size))
-print("The tag number " + str(mostNearTagToScene[0]) + " is the nearest with the sum: " + str(mostNearTagToScene[1]))
-
-#Plotly 
-#2D
-#printPlotlyScene2D(relevantData)
-#3D
-#printPlotlyScene3D(relevantData)
-
-#Canvas
-#printByCanvas(relevantData)
+#print(printScene(scene,size))
+#print(printScene(sceneTags[mostNearTagToScene[0]-1],size))
+#print("The tag number " + str(mostNearTagToScene[0]) + " is the nearest with the sum: " + str(mostNearTagToScene[1]))
