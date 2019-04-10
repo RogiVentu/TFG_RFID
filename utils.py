@@ -44,14 +44,19 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 					phi = 360 - phi
 				if dt < 0:
 					if phi < df or phi > (dt+360):
+						#print('x:' + str(x) + '/ y:' + str(y))
+						#print('j:' + str(j) + '/ i:' + str(i))
 						scene[x+j][y+i] += 1
 						#print(phi,i,j)
 						#print(x+j, y+i) 
 				else:
 					if phi < df and phi > dt:
+						#print('x:' + str(x) + '/ y:' + str(y))
+						#print('j:' + str(j) + '/ i:' + str(i))
 						scene[x+j][y+i] += 1
 						#print(phi,i,j)
-						print(x+j, y+i)
+						#print('this is x,y --> ' + str(x) + ',' + str(y))
+						#print(x+j, y+i)
 	return scene
 
 

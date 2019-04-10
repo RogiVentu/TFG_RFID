@@ -103,7 +103,6 @@ def getAreas(data, size, scene):
 		r_rot = d["robot_pose"][1]
 		r_x = int(r_pos[0]*10 + 80)
 		r_y = int(r_pos[1]*10 + 80)
-
 		
 		r_degrees = Quaternion(r_rot[3],r_rot[0],r_rot[1],r_rot[2]).degrees
 		#antenna
@@ -128,6 +127,7 @@ def getAreas(data, size, scene):
 		else:
 			r = 4
 
+		
 		scene = getSemiCircleAreas(r,deg,r_x,r_y,scene)
 		"""
 		#mirar el sentit en que pertany
@@ -199,7 +199,7 @@ def getMaxPos(scene):
 Value (number of captations): %s.
 Real position: (%s, %s).
 
-			""" % (j+1, i+1, scene[i,j], j-79, i-79)
+			""" % (i+1, j+1, scene[i,j], i-79, j-79)
 
 	return posMax
 
@@ -255,8 +255,9 @@ print("Done")
 #epc -> bc8c3448e600002e92479b8a (3 matches, group 1_1)
 #epc -> bcbb656f2400002e92398a42 (15 matches, group 1_1)
 #epc -> bce8efaa0e00002e923294b4 (13 matches, group 2_9)
+#epc -> bce48baa1d00002e92328504 (12 matches, group 1_1)
 
-epc = "bcc8c8762300002e92480130"
+epc = "bce48baa1d00002e92328504"
 
 print("Data just for one EPC")
 oneEpcData = getOneEpcData(relevantData, epc)
