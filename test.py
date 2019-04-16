@@ -257,7 +257,7 @@ print("Done")
 #epc -> bce8efaa0e00002e923294b4 (13 matches, group 2_9)
 #epc -> bce48baa1d00002e92328504 (12 matches, group 1_1)
 
-epc = "bce48baa1d00002e92328504"
+epc = "bcc8c8762300002e92480130"
 
 print("Data just for one EPC")
 oneEpcData = getOneEpcData(relevantData, epc)
@@ -269,10 +269,12 @@ size = 160 #-8 to 8 = 16x16 (json D) *10
 scene = np.zeros((size,size))
 scene = getAreas(oneEpcData, size, scene)
 print("Scene " +str(size)+ "x" +str(size)+ " created")
-print(printScene(scene,size))
+#print(printScene(scene,size))
 
 print("Getting aproximated product position...\n")
 print(getMaxPos(scene))
+
+matPlot(scene)
 
 #Creating 16 fake tags.
 #print("Creating 16 fake tags")

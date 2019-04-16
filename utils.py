@@ -6,6 +6,9 @@ import numpy as np
 import random
 import math
 
+import seaborn as sn
+import pandas as pd
+import matplotlib.pyplot as plt
 
 def getSemiCircleAreas(r,angle,x,y,scene):
 
@@ -206,6 +209,9 @@ def initScene(size):
 	return scene
 
 
+
+
+
 """
 radius = 3
 kernel = np.zeros((7, 7))
@@ -222,3 +228,11 @@ kernel[mask] = 1
 
 aka = np.pad(kernel, ((0, 3), (0, 0)), 'constant', constant_values=(0,0))
 """
+def matPlot(scene):
+	ax = sn.heatmap(scene, annot=True)
+	plt.figure(figsize = (10,7))
+	plt.show()
+
+
+
+print('cacatua')
