@@ -208,31 +208,7 @@ def initScene(size):
 			scene[i][j] = 0
 	return scene
 
-
-
-
-
-"""
-radius = 3
-kernel = np.zeros((7, 7))
-
-y,x = np.ogrid[-radius:radius+1, -radius:radius +1]
-
-mask = x*x + y*y <= radius*radius
-
-
-kernel[mask] = 1
-
-#print mask 
-#print kernel
-
-aka = np.pad(kernel, ((0, 3), (0, 0)), 'constant', constant_values=(0,0))
-"""
 def matPlot(scene):
-	ax = sn.heatmap(scene, annot=True)
-	plt.figure(figsize = (10,7))
+	plt.close()	
+	ax = sn.heatmap(scene, annot=False, fmt=".3f", cmap = 'Blues')
 	plt.show()
-
-
-
-print('cacatua')

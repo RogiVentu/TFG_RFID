@@ -257,7 +257,7 @@ print("Done")
 #epc -> bce8efaa0e00002e923294b4 (13 matches, group 2_9)
 #epc -> bce48baa1d00002e92328504 (12 matches, group 1_1)
 
-epc = "bcc8c8762300002e92480130"
+epc = "bca417c94600002e92516f34"
 
 print("Data just for one EPC")
 oneEpcData = getOneEpcData(relevantData, epc)
@@ -274,15 +274,31 @@ print("Scene " +str(size)+ "x" +str(size)+ " created")
 print("Getting aproximated product position...\n")
 print(getMaxPos(scene))
 
-matPlot(scene)
+#matPlot(scene)
+
+#SAVING 8 EPC WHICH WILL ACT LIKE REFERENCED TAGS
+#1_1 --> bce48baa1d00002e92328504 (12 matches) --> -1.4 / 1.0
+#1_5 --> bcc1cb8c7800002e92328d1e (22 matches) --> -4.7 / 0.3
+#1_8 --> bcc2c1822e59bd010039cc15 (13 matches) --> -6.1 / 0.3
+#1_11 --> bcbaf7bc9400002e924ed71c (11 matches) --> -7.9 / 0.3
+#2_2 --> bca26c139000002e9244ccfe (19 matches) --> -2.4 / 0.5
+#2_5 --> bc952c026300002e9235c962 (45 matches) --> -4.1 / 0.5
+#2_8 --> bceff6d62300002e922ecc16 (46 matches) --> -6.0 / 0.3
+#2_11 --> bca417c94600002e92516f34 (29 matches) --> -7.9 / 0.3
+
+epcs_rt = ['bce48baa1d00002e92328504', 'bcc1cb8c7800002e92328d1e', 'bcc2c1822e59bd010039cc15', 'bcbaf7bc9400002e924ed71c', 'bca26c139000002e9244ccfe', 'bc952c026300002e9235c962', 'bceff6d62300002e922ecc16', 'bca417c94600002e92516f34']
+
+scenes_rt = []
+scene_aux = np.zeros((size,size))
+for ep in epcs_rt:
+	data_rt = getOneEpcData(relevantData, ep)
+	s_rt = getAreas(data_rt, size, scene_aux)
+	scenes_rt.append(s_rt)
+	#matPlot(s_rt)
 
 #Creating 16 fake tags.
 #print("Creating 16 fake tags")
 #sceneTags = addFakeTags(size)
-"""
-for sce in sceneTags:
-	print(printScene(sce, size))
-"""
 
 #print("Looking for the nearest Tag to the scene")
 #mostNearTagToScene = compareSceneWithTags(sceneTags, scene)
