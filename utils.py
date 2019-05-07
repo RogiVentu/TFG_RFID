@@ -209,6 +209,18 @@ def initScene(size):
 	return scene
 
 def matPlot(scene):
+
 	plt.close()	
 	ax = sn.heatmap(scene, annot=False, fmt=".3f", cmap = 'Blues')
 	plt.show()
+
+def matPlot2fig(scene, tagscene):
+
+	f = plt.figure("Capted EPC")
+	ax = sn.heatmap(scene, annot=False, fmt=".3f", cmap = 'Blues')
+	f.show()
+	g = plt.figure("Most Equal Reference TAG")
+	bx = sn.heatmap(tagscene, annot=False, fmt=".3f", cmap = 'Blues')
+	g.show()
+
+	raw_input()

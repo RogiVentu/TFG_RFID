@@ -206,6 +206,7 @@ Real position: (%s, %s).
 def compareSceneWithTags(sceneTags, scene):
 	max_sum = 0
 	max_tag = 0
+	worth_tag = sceneTags[0]
 	count = 0
 	for tag in sceneTags:
 		count += 1
@@ -215,9 +216,10 @@ def compareSceneWithTags(sceneTags, scene):
 		if sumMat > max_sum:
 			max_tag = count
 			max_sum = sumMat
+			worth_tag = tag
 			#print(printScene(multMatrixs, 50))
 
-	return (max_tag, max_sum)
+	return (worth_tag, max_tag, max_sum)
 
 #jsons
 #1.-181005-080248-C2.json
@@ -257,52 +259,57 @@ print("Done")
 #epc -> bce8efaa0e00002e923294b4 (13 matches, group 2_9)
 #epc -> bce48baa1d00002e92328504 (12 matches, group 1_1)
 
-epc = "bca417c94600002e92516f34"
+epc = "bcc8c8762300002e92480130"
 
-print("Data just for one EPC")
+#Data just for one EPC
+print("\n\n----------------------- EPC CAPTION INFO -----------------------\n")
 oneEpcData = getOneEpcData(relevantData, epc)
-print("This EPC (" + epc + ") has " + str(len(oneEpcData)) + " captions")
-print("Done")
+print("This EPC (" + epc + ") has " + str(len(oneEpcData)) + " captions\n")
 
-print("Creating scene...")
+#Creating scene...
 size = 160 #-8 to 8 = 16x16 (json D) *10
 scene = np.zeros((size,size))
 scene = getAreas(oneEpcData, size, scene)
 print("Scene " +str(size)+ "x" +str(size)+ " created")
 #print(printScene(scene,size))
 
-print("Getting aproximated product position...\n")
+#Getting aproximated product position...
 print(getMaxPos(scene))
 
 #matPlot(scene)
 
 #SAVING 8 EPC WHICH WILL ACT LIKE REFERENCED TAGS
-#1_1 --> bce48baa1d00002e92328504 (12 matches) --> -1.4 / 1.0
-#1_5 --> bcc1cb8c7800002e92328d1e (22 matches) --> -4.7 / 0.3
-#1_8 --> bcc2c1822e59bd010039cc15 (13 matches) --> -6.1 / 0.3
-#1_11 --> bcbaf7bc9400002e924ed71c (11 matches) --> -7.9 / 0.3
-#2_2 --> bca26c139000002e9244ccfe (19 matches) --> -2.4 / 0.5
-#2_5 --> bc952c026300002e9235c962 (45 matches) --> -4.1 / 0.5
-#2_8 --> bceff6d62300002e922ecc16 (46 matches) --> -6.0 / 0.3
-#2_11 --> bca417c94600002e92516f34 (29 matches) --> -7.9 / 0.3
+#1 / 1_1 --> bce48baa1d00002e92328504 (12 matches) --> -1.4 / 1.0
+#2 / 1_5 --> bcc1cb8c7800002e92328d1e (22 matches) --> -4.7 / 0.3
+#3 / 1_8 --> bcc2c1822e59bd010039cc15 (13 matches) --> -6.1 / 0.3
+#4 / 1_11 --> bcbaf7bc9400002e924ed71c (11 matches) --> -7.9 / 0.3
+#5 / 2_2 --> bca26c139000002e9244ccfe (19 matches) --> -2.4 / 0.5
+#6 / 2_5 --> bc952c026300002e9235c962 (45 matches) --> -4.1 / 0.5
+#7 / 2_8 --> bceff6d62300002e922ecc16 (46 matches) --> -6.0 / 0.3
+#8 / 2_11 --> bca417c94600002e92516f34 (29 matches) --> -7.9 / 0.3
 
 epcs_rt = ['bce48baa1d00002e92328504', 'bcc1cb8c7800002e92328d1e', 'bcc2c1822e59bd010039cc15', 'bcbaf7bc9400002e924ed71c', 'bca26c139000002e9244ccfe', 'bc952c026300002e9235c962', 'bceff6d62300002e922ecc16', 'bca417c94600002e92516f34']
 
 scenes_rt = []
-scene_aux = np.zeros((size,size))
 for ep in epcs_rt:
+	scene_aux = np.zeros((size,size))
 	data_rt = getOneEpcData(relevantData, ep)
 	s_rt = getAreas(data_rt, size, scene_aux)
 	scenes_rt.append(s_rt)
 	#matPlot(s_rt)
 
-#Creating 16 fake tags.
-#print("Creating 16 fake tags")
-#sceneTags = addFakeTags(size)
+# Looking for the nearest Tag to the scene...
+print("\n\n----------------------- NEAREST REFERENCE TAG -----------------------\n")
+nearestRT = compareSceneWithTags(scenes_rt, scene)
 
-#print("Looking for the nearest Tag to the scene")
-#mostNearTagToScene = compareSceneWithTags(sceneTags, scene)
+print("The tag number " + str(nearestRT[1]) + " is the nearest with the sum: " + str(nearestRT[2]) + "\n")
+print(getMaxPos(nearestRT[0]))
+
+
+#matPlot(scene)
+#matPlot(nearestRT[0])
+matPlot2fig(scene,nearestRT[0])
 
 #print(printScene(scene,size))
 #print(printScene(sceneTags[mostNearTagToScene[0]-1],size))
-#print("The tag number " + str(mostNearTagToScene[0]) + " is the nearest with the sum: " + str(mostNearTagToScene[1]))
+
