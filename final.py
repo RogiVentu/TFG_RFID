@@ -202,7 +202,7 @@ print("Done")
 #epc -> bcea02adcf00002e9255cc80 (12 matches)
 #epc -> 3034900b000000c000000003 (15 matches)
 #epc -> 63 - 30349bc6e40363a4818626e6 (42 matches) ----- ( -4.46  ,   4.63 )
-epc = "30349bc6e40363a4818626e6"
+epc = "30347aae40004f55c682d54b"
 
 #Data just for one EPC
 print("\n\n----------------------- EPC CAPTION INFO -----------------------\n")
@@ -218,7 +218,7 @@ print("Scene " +str(size)+ "x" +str(size)+ " created")
 
 #Getting aproximated product position...
 print(getMaxPos(scene))
-matPlot1fig(scene)
+#matPlot1fig(scene)
 #matPlot(scene)
 
 
@@ -237,9 +237,9 @@ for ep in epcs_rt:
 	#matPlot(s_rt)
 
 # Looking for the nearest Tag to the scene...
-#print("\n\n----------------------- NEAREST REFERENCE TAG -----------------------\n")
-#nearestRT = compareSceneWithTags(scenes_rt, scene)
-#print("The tag number " + str(nearestRT[1]) + "with epc " + str(nearestRT[0])+ " is the nearest.\n")
-#print(getMaxPos(nearestRT[0]))
+print("\n\n----------------------- NEAREST REFERENCE TAG -----------------------\n")
+nearestRT = compareSceneWithTags(scenes_rt, scene)
+print("The tag number " + str(nearestRT[1]) + "with epc " + str(nearestRT[0])+ " is the nearest.\n")
+print(getMaxPos(nearestRT[0]))
 
-#matPlot2fig(scene,nearestRT[0])
+matPlot2fig(scene,nearestRT[0])
