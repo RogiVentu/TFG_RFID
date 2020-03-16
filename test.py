@@ -15,6 +15,7 @@ import os
 import numpy as np
 import random
 import math
+import csv
 
 #from tkinter import *
 
@@ -119,13 +120,13 @@ def getAreas(data, size, scene):
 		deg = r_degrees + a_degrees
 		
 		#agafar la mida (radi) segons el rssi (quan mes gran, mes petit es el radi)
-		r = 4
+		r = 40
 		if d['rssi'] < -40:
-			r = 2
+			r = 20
 		elif -40 < d['rssi'] < -60:
-			r = 3
+			r = 30
 		else:
-			r = 4
+			r = 40
 
 		
 		scene = getSemiCircleAreas(r,deg,r_x,r_y,scene)
@@ -221,11 +222,20 @@ def compareSceneWithTags(sceneTags, scene):
 
 	return (worth_tag, max_tag, max_sum)
 
+def getReferenceTagsFromCSV(csvfile):
+	refTags = []
+	with open(csvfile, mode="r") as csv_file:
+		for line in csv_file:
+			print(line)
+			refTags.append(line)
+
+	return refTags
 #jsons
 #1.-181005-080248-C2.json
-#2.-181127-125006-D1.json
+#2.-181127-125006-D1.json3
+#3(prova real).- dades/location/S0_20DB.json
 print("Reading data...")
-jsonData = readJSON('dades/181127-125006-D1.json', 1)
+jsonData = readJSON('dades/location/S0_20DB.json', 1)
 print("Done.")
 
 print("Getting important variables...")
@@ -259,7 +269,10 @@ print("Done")
 #epc -> bce8efaa0e00002e923294b4 (13 matches, group 2_9)
 #epc -> bce48baa1d00002e92328504 (12 matches, group 1_1)
 
-epc = "bcc8c8762300002e92480130"
+#3.- prova real
+#epc -> 30347aae40004f55c682d54b (11 matches)
+#epc -> bcea02adcf00002e9255cc80 (12 matches)
+epc = "bcea02adcf00002e9255cc80"
 
 #Data just for one EPC
 print("\n\n----------------------- EPC CAPTION INFO -----------------------\n")
@@ -288,12 +301,18 @@ print(getMaxPos(scene))
 #7 / 2_8 --> bceff6d62300002e922ecc16 (46 matches) --> -6.0 / 0.3
 #8 / 2_11 --> bca417c94600002e92516f34 (29 matches) --> -7.9 / 0.3
 
-epcs_rt = ['bce48baa1d00002e92328504', 'bcc1cb8c7800002e92328d1e', 'bcc2c1822e59bd010039cc15', 'bcbaf7bc9400002e924ed71c', 'bca26c139000002e9244ccfe', 'bc952c026300002e9235c962', 'bceff6d62300002e922ecc16', 'bca417c94600002e92516f34']
+#epcs_rt = ['bce48baa1d00002e92328504', 'bcc1cb8c7800002e92328d1e', 'bcc2c1822e59bd010039cc15', 'bcbaf7bc9400002e924ed71c', 'bca26c139000002e9244ccfe', 'bc952c026300002e9235c962', 'bceff6d62300002e922ecc16', 'bca417c94600002e92516f34']
+
+epcs_rt = [('bcc566dbb200002e923c1274', -1.67, 0.83 ), ('bc98abf11e00002e923b4f16', -2.32, -0.65)]
+
+# Read csv reference tags
+epcs_TEST = getReferenceTagsFromCSV("dades/reference_tags_pos.csv")
+print(epcs_TEST)
 
 scenes_rt = []
 for ep in epcs_rt:
 	scene_aux = np.zeros((size,size))
-	data_rt = getOneEpcData(relevantData, ep)
+	data_rt = getOneEpcData(relevantData, ep[0])
 	s_rt = getAreas(data_rt, size, scene_aux)
 	scenes_rt.append(s_rt)
 	#matPlot(s_rt)
@@ -301,8 +320,7 @@ for ep in epcs_rt:
 # Looking for the nearest Tag to the scene...
 print("\n\n----------------------- NEAREST REFERENCE TAG -----------------------\n")
 nearestRT = compareSceneWithTags(scenes_rt, scene)
-
-print("The tag number " + str(nearestRT[1]) + " is the nearest with the sum: " + str(nearestRT[2]) + "\n")
+print("The tag number " + str(nearestRT[1]) + "with epc " + str(nearestRT[0])+ " is the nearest.\n")
 print(getMaxPos(nearestRT[0]))
 
 

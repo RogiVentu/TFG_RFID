@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 
 def getSemiCircleAreas(r,angle,x,y,scene):
 
+	print("x:" + str(x) + " - y:" + str(y))
+
 	"""
 	if angle > 180:
 		angle = angle -180
@@ -45,6 +47,8 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 					phi = 360 - phi
 				elif i >= 0 and j > 0:
 					phi = 360 - phi
+				
+				#print('dt:' + str(dt) + ' / phi:' + str(phi) + " / df:" + str(df))
 				if dt < 0:
 					if phi < df or phi > (dt+360):
 						#print('x:' + str(x) + '/ y:' + str(y))
@@ -56,10 +60,11 @@ def getSemiCircleAreas(r,angle,x,y,scene):
 					if phi < df and phi > dt:
 						#print('x:' + str(x) + '/ y:' + str(y))
 						#print('j:' + str(j) + '/ i:' + str(i))
-						scene[x+j][y+i] += 1
-						#print(phi,i,j)
-						#print('this is x,y --> ' + str(x) + ',' + str(y))
-						#print(x+j, y+i)
+						if(x+j < 160 and x+j >= 0 and y+i < 160 and y+i >= 0):
+							scene[x+j][y+i] += 1
+							#print(phi,i,j)
+							#print('this is x,y --> ' + str(x) + ',' + str(y))
+							#print(x+j, y+i)
 	return scene
 
 
@@ -214,13 +219,24 @@ def matPlot(scene):
 	ax = sn.heatmap(scene, annot=False, fmt=".3f", cmap = 'Blues')
 	plt.show()
 
+def matPlot1fig(scene):
+
+	f = plt.figure("Capted EPC")
+	ax = sn.heatmap(scene, annot=False, fmt=".3f", cmap = 'Blues')
+	ax.invert_yaxis()
+	f.show()
+
+	raw_input()
+
 def matPlot2fig(scene, tagscene):
 
 	f = plt.figure("Capted EPC")
 	ax = sn.heatmap(scene, annot=False, fmt=".3f", cmap = 'Blues')
+	ax.invert_yaxis()
 	f.show()
 	g = plt.figure("Most Equal Reference TAG")
 	bx = sn.heatmap(tagscene, annot=False, fmt=".3f", cmap = 'Blues')
+	bx.invert_yaxis()
 	g.show()
 
 	raw_input()
