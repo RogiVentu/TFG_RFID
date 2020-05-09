@@ -1,5 +1,3 @@
-import plotly.graph_objs as go
-import plotly
 from pyquaternion import Quaternion
 
 import numpy as np
@@ -12,7 +10,7 @@ import matplotlib.pyplot as plt
 
 def getSemiCircleAreas(r,angle,x,y,scene):
 
-	print("x:" + str(x) + " - y:" + str(y))
+	#print("x:" + str(x) + " - y:" + str(y))
 
 	"""
 	if angle > 180:

@@ -143,6 +143,7 @@ def printScene(scene, size):
 
 def getMaxPos(scene):
 
+	print(scene)
 	i,j = np.unravel_index(scene.argmax(), scene.shape)
 	posMax = """Position in the scene: (%s, %s).
 Value (number of captations): %s.
@@ -153,32 +154,152 @@ Real position: (%s, %s).
 	return posMax
 
 
-def compareSceneWithTags(sceneTags, scene):
+def compareSceneWithTagsMULT(sceneTags, scene):
 	max_sum = 0
 	max_tag = 0
 	worth_tag = sceneTags[0]
+	num_tag = sceneTags[1]
+	epc_tag = sceneTags[2]
 	count = 0
+
+	topTags = []
 	for tag in sceneTags:
 		count += 1
-		multMatrixs = tag * scene
+		multMatrixs = tag[0] * scene
 		#print(printScene(multMatrixs, 50))
 		sumMat = multMatrixs.sum()
 		if sumMat > max_sum:
 			max_tag = count
 			max_sum = sumMat
-			worth_tag = tag
+			worth_tag = tag[0]
+			num_tag = tag[1]
+			epc_tag = tag[2]
 			#print(printScene(multMatrixs, 50))
 
-	return (worth_tag, max_tag, max_sum)
+		topTags.append([sumMat, tag[1]])	
+
+	topTags.sort(reverse=True)
+	minValue = topTags[len(topTags) - 1][0]
+	maxValue = topTags[0][0]
+
+
+	#print(minValue , maxValue)
+	normalizedData = []
+	for tag in topTags:
+		tag[0] = (tag[0] - minValue)/(maxValue - minValue)
+		normalizedData = append([tag[1], tag[0]])
+		#print(str(tag[1]) + ': ' + str(tag[0]))
+
+	return (worth_tag, max_tag, max_sum, num_tag, epc_tag, normalizedData)
+
+def compareSceneWithTagsSUMREST(sceneTags, scene):
+
+	max_sum = 0
+	max_tag = 0
+	worth_tag = sceneTags[0]
+	num_tag = sceneTags[1]
+	epc_tag = sceneTags[2]
+
+	topTags = []
+	for tag in sceneTags:
+		suma = 0
+		sceneTag = tag[0]
+		for i in range(0, len(scene)):
+			for j in range(0, len(scene)):
+				if(sceneTag[i][j] > 0 and scene[i][j] > 0):
+					suma += sceneTag[i][j] + scene[i][j]
+				else:
+					suma -= sceneTag[i][j] - scene[i][j]
+
+		topTags.append([suma , tag[1]])
+		#print('EPC NUM: ' + str(tag[1]) + ' - SUMA:' + str(suma))
+
+		#Fer top de sumas, el que sigui mes alt se pto prende
+
+
+	topTags.sort(reverse=True)
+	minValue = topTags[len(topTags) - 1][0]
+	maxValue = topTags[0][0]
+
+	
+	#print(minValue , maxValue)
+	normalizedData = []
+
+	for tag in topTags:
+		tag[0] = (tag[0] - minValue)/(maxValue - minValue)
+		normalizedData.append([tag[1], tag[0]])
+		#print(str(tag[1]) + ': ' + str(tag[0]))
+
+				
+	#print(normalizedData)
+	return (worth_tag, max_tag, max_sum, num_tag, epc_tag, normalizedData)
 
 def getReferenceTagsFromCSV(csvfile):
 	refTags = []
 	with open(csvfile, mode="r") as csv_file:
 		for line in csv_file:
 			#print(line)
-			refTags.append(line)
+			oneRefTag = line.split(',', 3)
+			oneRefTag[3] = oneRefTag[3].replace('\n', '');
+			refTags.append(oneRefTag)
 
 	return refTags
+
+def triangulatePoints( pounders , epcs):
+
+	a = pounders[1]
+	b = pounders[2]
+	c = pounders[3]
+
+	atag = []
+	btag = []
+	ctag = []
+
+	for epc in epcs:
+		if a[0] == epc[0]:
+			atag = epc
+		if b[0] == epc[0]:
+			btag = epc
+		if c[0] == epc[0]:
+			ctag = epc
+
+	print(a , b , c)
+
+	print(atag, btag, ctag)
+
+	xn = a[1]*float(atag[2]) + b[1]*float(btag[2]) + c[1]*float(ctag[2])
+	xd = a[1] + b[1] + c[1]
+
+	x = xn / xd
+
+	yn = a[1]*float(atag[3]) + b[1]*float(btag[3]) + c[1]*float(ctag[3])
+	yd = a[1] + b[1] + c[1]
+
+	y = yn / yd
+
+	print('Triangulation pos -> ' + str(x) + " , " + str(y))
+
+def nPoints( pounders , epcs , n):
+
+	xn = 0
+	xd = 0
+
+	yn = 0
+	yd = 0
+
+	for i in range(0 , n):
+		for epc in epcs:
+			if(pounders[i][0] ==  epc[0]):
+				xn += pounders[i][1] * float(epc[2])
+				xd += pounders[i][1]
+
+				yn += pounders[i][1] * float(epc[3])
+				yd += pounders[i][1]
+
+	x = xn / xd
+	y = yn / yd
+
+	print('N-Points pos -> ' + str(x) + " , " + str(y));
 
 
 print("Reading data...")
@@ -202,7 +323,12 @@ print("Done")
 #epc -> bcea02adcf00002e9255cc80 (12 matches)
 #epc -> 3034900b000000c000000003 (15 matches)
 #epc -> 63 - 30349bc6e40363a4818626e6 (42 matches) ----- ( -4.46  ,   4.63 )
-epc = "30347aae40004f55c682d54b"
+#68 -> 30349bc6fc11f5aab509b27d
+#29 -> 30349f46f00561844d3cca97
+#41 -> 303602c44408fc7be14d1a1b
+#54 -> 30349bb868034fa0b833ebc4
+#30 -> 303602c44408fc407fc0fc5f
+epc = "303602c44408fc407fc0fc5f"
 
 #Data just for one EPC
 print("\n\n----------------------- EPC CAPTION INFO -----------------------\n")
@@ -219,27 +345,43 @@ print("Scene " +str(size)+ "x" +str(size)+ " created")
 #Getting aproximated product position...
 print(getMaxPos(scene))
 #matPlot1fig(scene)
-#matPlot(scene)
 
 
-epcs_rt = [('bcc566dbb200002e923c1274', -1.67, 0.83 ), ('bc98abf11e00002e923b4f16', -2.32, -0.65)]
+
+#epcs_rt = [['bc94e35bb000002e922afb74', -2.17, 0.80 ], ['bcadf7973500002e9238fd56', -2.26, -0.10]]
 
 # Read csv reference tags
-epcs_TEST = getReferenceTagsFromCSV("dades/reference_tags_pos.csv")
-print(epcs_TEST)
-
+epcs_RT_real = getReferenceTagsFromCSV("dades/reference_tags_pos.csv")
+#print(epcs_TEST)
 scenes_rt = []
-for ep in epcs_rt:
+for ep in epcs_RT_real:
+	rt_data = []
 	scene_aux = np.zeros((size,size))
-	data_rt = getOneEpcData(relevantData, ep[0])
+	data_rt = getOneEpcData(relevantData, ep[1].lower())
 	s_rt = getAreas(data_rt, size, scene_aux)
-	scenes_rt.append(s_rt)
+	rt_data = [s_rt, ep[0], ep[1]]
+	scenes_rt.append(rt_data)
 	#matPlot(s_rt)
+
+#print(scenes_rt)
+
+
+
+
+
 
 # Looking for the nearest Tag to the scene...
 print("\n\n----------------------- NEAREST REFERENCE TAG -----------------------\n")
-nearestRT = compareSceneWithTags(scenes_rt, scene)
-print("The tag number " + str(nearestRT[1]) + "with epc " + str(nearestRT[0])+ " is the nearest.\n")
-print(getMaxPos(nearestRT[0]))
+#nearestRT = compareSceneWithTagsMULT(scenes_rt, scene)
+nearestRT = compareSceneWithTagsSUMREST(scenes_rt, scene)
 
-matPlot2fig(scene,nearestRT[0])
+#Centro de triangulo sin pesos -> https://es.wikihow.com/calcular-el-centro-de-gravedad-de-un-tri%C3%A1ngulo
+#Fer el mateix pero multiplicant les coordenades x y y per el pes d'aquestes -> ERRONI
+
+triangulatePoints(nearestRT[5], epcs_RT_real)
+nPoints(nearestRT[5], epcs_RT_real , 5)
+nPoints(nearestRT[5], epcs_RT_real , 10)
+nPoints(nearestRT[5], epcs_RT_real , 15)
+nPoints(nearestRT[5], epcs_RT_real , 30)
+
+#matPlot2fig(scene,nearestRT[0])
